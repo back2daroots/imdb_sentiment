@@ -49,15 +49,16 @@ test/pos&neg
 ---
 
 ## 📊 Current Results (OOF + Test)
+
 OOF (train):
-F1:       0.9120
-ROC_AUC:  0.9706
-Accuracy: 0.9097
+- F1:       0.9120
+- ROC_AUC:  0.9706
+- Accuracy: 0.9097
 
 Test:
-F1:       0.9161
-ROC_AUC:  0.9742
-Accuracy: 0.9141
+- F1:       0.9161
+- ROC_AUC:  0.9742
+- Accuracy: 0.9141
 
 
 ---
