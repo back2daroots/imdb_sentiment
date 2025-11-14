@@ -1,0 +1,8 @@
+datasets==3.*
+scikit-learn==1.*
+numpy==2.*
+pandas==2.*
+matplotlib==3.*
+joblib==1.*
+pyyaml==6.*
+tqdm==4.*

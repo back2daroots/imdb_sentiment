@@ -1,0 +1,23 @@
+seed: 42
+
+data:
+  dataset_name: imdb
+  text_col: text
+  label_col: label
+  n_splits: 5
+  shuffle: true
+
+model:
+  tfidf:
+    max_features: 100000
+    ngram_range: [1, 2]
+    min_df: 2
+    sublinear_tf: true
+  logreg:
+    C: 4.0
+    max_iter: 2000
+    n_jobs: -1
+
+eval:
+  threshold: 0.5
+  metrics: [f1, roc_auc, accuracy]

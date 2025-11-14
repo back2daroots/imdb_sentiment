@@ -1,0 +1,9 @@
+.venv/
+data/
+models/
+reports/
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+.DS_Store
