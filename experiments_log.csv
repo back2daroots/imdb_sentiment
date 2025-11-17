@@ -1,0 +1,2 @@
+timestamp,exp_name,model,seed,n_splits,tfidf_params,logreg_params,threshold,oof_f1,oof_roc_auc,oof_accuracy,test_f1,test_roc_auc,test_accuracy,notes
+2025-11-14 15:13:02,tfidf_logreg_baseline,TFIDF+LogisticRegression,123,5,"{""max_features"": 100000, ""min_df"": 2, ""ngram_range"": [1, 2], ""sublinear_tf"": true}","{""C"": 4.0, ""max_iter"": 2000, ""n_jobs"": -1}",0.45,0.9119883040935672,0.9706348124999999,0.9097,0.9161378502391877,0.97419636,0.9141,Initial TF-IDF + LogisticRegression baseline
