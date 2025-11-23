@@ -127,6 +127,8 @@ def main():
             #greater_is_better=True,
             logging_steps=50,
             seed=seed + k,
+            save_steps=10**10,
+            save_total_limit=1,
             report_to=[],
         )
 
@@ -140,6 +142,8 @@ def main():
         )
 
         trainer.train()
+        model.save_pretrained(fold_out_dir)
+        tokenizer.save_pretrained(fold_out_dir)
 
         
         preds = trainer.predict(valid_ds)
