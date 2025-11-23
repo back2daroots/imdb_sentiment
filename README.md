@@ -48,28 +48,45 @@ test/pos&neg
 
 ---
 
-## 📊 Current Results (OOF + Test)
+## 🤗 Transformer Baseline — DistilBERT
 
-OOF (train):
-- F1:       0.9120
-- ROC_AUC:  0.9706
-- Accuracy: 0.9097
+In addition to the TF-IDF + Logistic Regression baseline, we trained a transformer-based model using:
 
-Test:
-- F1:       0.9161
-- ROC_AUC:  0.9742
-- Accuracy: 0.9141
+- **distilbert-base-uncased**
+- **same 5-fold CV splits** (`cv_folds.json`)
+- fine-tuning performed on **Google Colab (A100 GPU)**
 
+Training script:
+python -m scripts.05_train_distilbert
+
+Evaluation:
+python -m scripts.06_eval_distilbert
 
 ---
 
-## ▶️ Next Steps
-	•	04_top_features.py: interpret LR weights (top positive/negative words)
-	•	Transformer baseline (DistilBERT) using same CV folds + OOF
-	•	Model blending TF-IDF + Transformer
-	•	Error analysis
+## 🔥 Comparison: TF-IDF Baseline vs DistilBERT
 
+| Model                       | F1     | ROC-AUC | Accuracy |
+|-----------------------------|--------|---------|----------|
+| **TF-IDF + Logistic Reg.**  | 0.9161 | 0.9742  | 0.9141   |
+| **DistilBERT (transformer)**| **0.9216** | **0.9765** | **0.9207** |
 
+DistilBERT outperforms the TF-IDF baseline across all major metrics:
+- +0.5% F1
+- +0.6% Accuracy
+- +0.23% ROC-AUC
+
+This confirms the correctness of the training pipeline and demonstrates the expected benefit of a transformer-based approach.
+
+---
+
+## 🎯 Next Steps
+
+- **Model blending**: combine TF-IDF and DistilBERT predictions  
+- **Error analysis**: inspect misclassified examples for both models  
+- **Further transformer tuning** (epochs, lr, max_length, scheduler)
+
+------
 
 
 ## Setup
