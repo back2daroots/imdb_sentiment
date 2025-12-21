@@ -3,27 +3,36 @@
 A clean, reproducible ML pipeline for Sentiment Analysis on the IMDb movie reviews dataset.  
 This project demonstrates a script-first workflow with configuration files, reproducible CV folds, OOF predictions, and baseline evaluation.
 
+## 📌 Project Overview
+
+This project explores sentiment analysis on the IMDb movie reviews dataset.
+The goal is to compare classical NLP approaches with transformer-based models,
+and to investigate how ensembling and conditional blending can improve performance.
+
+We start with a TF-IDF + Logistic Regression baseline, move to a DistilBERT model,
+and then combine both using global and conditional blending strategies.
+
 ---
 ## 📦 Project Structure
 ```
 imdb/
-├── configs/
-│   ├── config.yaml                				 # Feature, model, and path settings
-    └──  local.yaml                        # Local override
-├── data/                                  # dataset (ignored by git)
-├── models/                        				 # Saved models per fold (ignored by git)
-├── reports/                      				 # Metrics, plots (ignored by git)
-├── src/                                   # Reusable code (config loader, utils etc)
-│   ├──                       	      		 #  
-│   ├──                 			          	 #  
-│   ├──                   			        	 #  
-│   ├──                			            	 #  
-│   ├──          			                     #  
-│   └──                   			           # 
-├── experiments_log.csv      				       # Experiment registry
-├── requirements.txt                       # Dependencies specification
-├── README.md         				     
-└── .gitignore
+├── configs/                 # YAML configs
+│   └── base.yaml
+├── data/                    # Train / test splits
+├── models/                  # Saved models and OOF predictions
+├── reports/                 # Metrics, confusion matrices, error analysis
+├── scripts/                 # Training, evaluation and analysis scripts
+│   ├── 02_train_tfidf_lr.py
+│   ├── 03_eval.py
+│   ├── 05_train_distilbert.py
+│   ├── 06_eval_distilbert.py
+│   ├── 07_blend_models.py
+│   ├── 08_error_analysis.py
+│   └── 09_conditional_blend.py
+├── src/
+│   ├── config.py
+│   └── experiment_logger.py
+└── README.md
 ```
 ---
 
@@ -101,6 +110,16 @@ python -m scripts.07_blend_models
 This blended model substantially outperforms both individual models.
 
 ---
+## 🏆 Model Comparison (Test Set)
+
+| Model                         | F1     | ROC-AUC | Accuracy |
+|------------------------------|--------|---------|----------|
+| TF-IDF + Logistic Regression | 0.9141 | 0.9742  | 0.9141   |
+| DistilBERT                   | 0.9216 | 0.9765  | 0.9207   |
+| Global Blend                 | 0.9369 | 0.9815  | 0.9357   |
+| Conditional Blend (length)   | 0.9390 | 0.9819  | 0.9380   |
+
+---
 
 🕵️ Error Analysis Summary
 
@@ -143,6 +162,15 @@ python -m scripts.09_conditional_blend
 ## 🎯 Next Steps
 
 - **Further transformer tuning** (epochs, lr, max_length, scheduler)
+
+---
+
+## 🔑 Key Takeaways
+
+- Classical TF-IDF models remain strong on short and emotionally explicit texts.
+- Transformer models better capture contextual and implicit sentiment.
+- Blending complementary models yields significant gains without retraining.
+- Simple rule-based conditional blending can further improve performance.
 
 ------
 
