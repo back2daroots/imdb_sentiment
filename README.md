@@ -105,9 +105,9 @@ This blended model substantially outperforms both individual models.
 🕵️ Error Analysis Summary
 
 We compared predictions across TF-IDF, DistilBERT, and the blend:
-	•	DistilBERT improves especially on long, descriptive, context-dependent reviews, where sentiment is expressed implicitly and requires understanding the overall tone and argument structure.
-	•	TF-IDF remains strong on short and emotionally explicit reviews, where single keywords (e.g., “awful”, “excellent”) carry most of the signal.
-	•	Both models struggle with sarcasm/irony, mixed-sentiment reviews, and potential label noise.
+- DistilBERT improves especially on long, descriptive, context-dependent reviews, where sentiment is expressed implicitly and requires understanding the overall tone and argument structure.
+- TF-IDF remains strong on short and emotionally explicit reviews, where single keywords (e.g., “awful”, “excellent”) carry most of the signal.
+- Both models struggle with sarcasm/irony, mixed-sentiment reviews, and potential label noise.
 
 As a result, blending benefits from complementary strengths and achieves the best overall quality.
 
