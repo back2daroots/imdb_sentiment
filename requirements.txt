@@ -6,3 +6,7 @@ matplotlib==3.*
 joblib==1.*
 pyyaml==6.*
 tqdm==4.*
+transformers==4.*
+datasets==3.*
+accelerate==1.*
+torch==2.*

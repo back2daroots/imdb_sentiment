@@ -17,6 +17,7 @@ from sklearn.metrics import (
     classification_report,
 )
 import matplotlib.pyplot as plt
+from src.experiment_logger import log_experiment
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT))
@@ -45,58 +46,6 @@ def plot_confusion(cm: np.ndarray, out_path: str):
     plt.savefig(out_path, bbox_inches="tight")
     plt.close()
 
-def log_experiment(test_metrics: dict, cfg: dict, notes: str = ""):
-    exp_path = Path("experiments_log.csv")
-
-    cv_metrics_path = Path("reports/cv_metrics_distilbert.json")
-    oof_f1 = oof_roc_auc = oof_accuracy = None
-    trf_params = {}
-    seed = cfg.get("seed", None)
-    n_splits = cfg.get("data", {}).get("n_splits", None)
-    threshold = cfg.get("eval", {}).get("threshold", None)
-
-    if cv_metrics_path.exists():
-        with cv_metrics_path.open("r", encoding="utf-8") as f:
-            cv = json.load(f)
-        oof_f1 = cv.get("oof_f1")
-        oof_roc_auc = cv.get("oof_roc_auc")
-        oof_accuracy = cv.get("oof_accuracy")
-        trf_params = cv.get("transformer", cfg.get("model", {}).get("transformer", {}))
-        if seed is None:
-            seed = cv.get("seed", None)
-
-    trf_str = json.dumps(trf_params, ensure_ascii=False, sort_keys=True)
-
-    exp_name = cfg.get("eval", {}).get("exp_name", "distilbert_baseline")
-    model_name = trf_params.get("model_name", "distilbert-base-uncased")
-
-    row = {
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "exp_name": exp_name,
-        "model": model_name,
-        "seed": seed,
-        "n_splits": n_splits,
-        "params": trf_str,
-        "threshold": threshold,
-        "oof_f1": oof_f1,
-        "oof_roc_auc": oof_roc_auc,
-        "oof_accuracy": oof_accuracy,
-        "test_f1": test_metrics.get("f1"),
-        "test_roc_auc": test_metrics.get("roc_auc"),
-        "test_accuracy": test_metrics.get("accuracy"),
-        "notes": notes,
-    }
-
-    header = list(row.keys())
-    file_exists = exp_path.exists()
-
-    with exp_path.open("a", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=header)
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(row)
-
-    print(f"[log] DistilBERT experiment appended to {exp_path}")
 
 def main():
     cfg = load_config()
@@ -183,9 +132,32 @@ def main():
         "reports/confusion_matrix_distilbert.png"
     )
 
+    oof_metrics = None
+    cv_metrics_path = Path("reports/cv_metrics_distilbert.json")
+    if cv_metrics_path.exists():
+        with cv_metrics_path.open("r", encoding="utf-8") as f:
+            oof_metrics = json.load(f)
+
+    seed = cfg.get("seed", None)
+    n_splits = cfg.get("data", {}).get("n_splits", None)
+    threshold = cfg.get("eval", {}).get("threshold", None)
+    trf_cfg = cfg.get("model", {}).get("transformer", {})
+
+    exp_name = cfg.get("eval", {}).get("exp_name", "distilbert_baseline")
+
+    params = {
+        "transformer": trf_cfg,
+    }
+
     log_experiment(
+        exp_name=exp_name,
+        model=trf_cfg.get("model_name", "distilbert-base-uncased"),
+        seed=seed,
+        n_splits=n_splits,
+        params=params,
+        threshold=threshold,
+        oof_metrics=oof_metrics,
         test_metrics=metrics,
-        cfg=cfg,
         notes="DistilBERT baseline with K-Fold ensemble",
     )
 

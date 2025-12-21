@@ -7,6 +7,7 @@ from sklearn.metrics import (
     f1_score, roc_auc_score, accuracy_score, confusion_matrix, classification_report)
 import matplotlib.pyplot as plt 
 from datetime import datetime
+from src.experiment_logger import log_experiment
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT))
@@ -32,67 +33,6 @@ def plot_confusion(cm: np.ndarray, out_path: str):
     plt.tight_layout()
     plt.savefig(out_path, bbox_inches="tight")
     plt.close()
-
-def log_experiment(test_metrics: dict, cfg: dict, notes: str = ''):
-    exp_path = Path("experiments_log.csv")
-
-    # try to read OOF metrics from reports/cv_metrics.json
-    cv_metrics_path = Path("reports/cv_metrics.json")
-    oof_f1 = oof_roc_auc = oof_accuracy = None
-    tfidf_params = {}
-    logreg_params = {}
-    seed = cfg.get("seed", None)
-    n_splits = cfg.get("data", {}).get("n_splits", None)
-    threshold = cfg.get("eval", {}).get("threshold", None)
-
-    if cv_metrics_path.exists():
-        with cv_metrics_path.open("r", encoding="utf-8") as f:
-            cv = json.load(f)
-        oof_f1 = cv.get("oof_f1")
-        oof_roc_auc = cv.get("oof_roc_auc")
-        oof_accuracy = cv.get("oof_accuracy")
-        tfidf_params = cv.get("tfidf", cfg.get("model", {}).get("tfidf", {}))
-        logreg_params = cv.get("logreg", cfg.get("model", {}).get("logreg", {}))
-        if seed is None:
-            seed = cv.get("seed", None)
-
-    # string representations for compact logging
-    tfidf_str = json.dumps(tfidf_params, ensure_ascii=False, sort_keys=True)
-    logreg_str = json.dumps(logreg_params, ensure_ascii=False, sort_keys=True)
-
-    # allow exp_name override from config, fallback to default
-    exp_name = cfg.get("eval", {}).get("exp_name", "tfidf_logreg_baseline")
-    model_name = "TFIDF+LogisticRegression"
-
-
-    row = {
-    'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-    'exp_name': exp_name,
-    'model': model_name,
-    'seed': seed,
-    'n_splits': n_splits,
-    'tfidf_params': tfidf_str,
-    'logreg_params': logreg_str,
-    'threshold': threshold,
-    'oof_f1': oof_f1,
-    'oof_roc_auc': oof_roc_auc,
-    'oof_accuracy': oof_accuracy,
-    'test_f1': test_metrics.get('f1'),
-    'test_roc_auc': test_metrics.get('roc_auc'),
-    'test_accuracy': test_metrics.get('accuracy'),
-    'notes': notes,
-    }
-
-    header = list(row.keys())
-    file_exists = exp_path.exists()
-
-    with exp_path.open('a', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=header)
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(row)
-
-    print(f'[log] Experiment appended to {exp_path}')
 
 def main():
     cfg = load_config()
@@ -131,18 +71,36 @@ def main():
     cm = confusion_matrix(y_true, preds)
     plot_confusion(cm, "reports/confusion_matrix.png")
 
-    print('== Test metrics==')
-    print(f'F1: {metrics["f1"]:.4f}')
-    print(f'ROC_AUC: {metrics["roc_auc"]:.4f}')
-    print(f'Accuracy: {metrics["accuracy"]:.4f}')
-    print('Artifacts saved in reports/.')
+    cv_metrics_path = Path("reports/cv_metrics.json")
+    oof_metrics = None
+    if cv_metrics_path.exists():
+        with cv_metrics_path.open("r", encoding="utf-8") as f:
+            oof_metrics = json.load(f)
 
+    seed = cfg.get("seed", None)
+    n_splits = cfg.get("data", {}).get("n_splits", None)
+    threshold = cfg.get("eval", {}).get("threshold", None)
+    tfidf_cfg = cfg.get("model", {}).get("tfidf", {})
+    logreg_cfg = cfg.get("model", {}).get("logreg", {})
+
+    exp_name = cfg.get("eval", {}).get("exp_name", "tfidf_logreg_baseline")
+
+    params = {
+        "tfidf": tfidf_cfg,
+        "logreg": logreg_cfg,
+    }
 
     log_experiment(
+        exp_name=exp_name,
+        model="TFIDF+LogisticRegression",
+        seed=seed,
+        n_splits=n_splits,
+        params=params,
+        threshold=threshold,
+        oof_metrics=oof_metrics,
         test_metrics=metrics,
-        cfg=cfg,
-        notes='Initial TF-IDF + LogisticRegression baseline',
-        )
+        notes="TF-IDF + LogisticRegression baseline",
+    )
 
 if __name__ == '__main__':
     main()
