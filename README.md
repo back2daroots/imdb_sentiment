@@ -83,9 +83,7 @@ This confirms the correctness of the training pipeline and demonstrates the expe
 
 We blended TF-IDF+LogReg and DistilBERT probabilities:
 
-\[
-p_{\text{blend}} = (1-\alpha)\cdot p_{\text{tfidf}} + \alpha \cdot p_{\text{distilbert}}
-\]
+p_blend = (1 - alpha) * p_tfidf + alpha * p_distilbert
 
 The weight \(\alpha\) was selected by maximizing **OOF F1** (using the same CV folds).
 
