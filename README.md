@@ -94,9 +94,9 @@ python -m scripts.07_blend_models
 
 📈 Blend — Test Metrics
 
-F1:       0.9369
-ROC-AUC:  0.9815
-Accuracy: 0.9357
+- F1:       0.9369
+- ROC-AUC:  0.9815
+- Accuracy: 0.9357
 
 This blended model substantially outperforms both individual models.
 
