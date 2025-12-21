@@ -79,12 +79,46 @@ DistilBERT outperforms the TF-IDF baseline across all major metrics:
 This confirms the correctness of the training pipeline and demonstrates the expected benefit of a transformer-based approach.
 
 ---
+## 🧩 Blending: TF-IDF + DistilBERT
+
+We blended TF-IDF+LogReg and DistilBERT probabilities:
+
+\[
+p_{\text{blend}} = (1-\alpha)\cdot p_{\text{tfidf}} + \alpha \cdot p_{\text{distilbert}}
+\]
+
+The weight \(\alpha\) was selected by maximizing **OOF F1** (using the same CV folds).
+
+Run:
+```bash
+python -m scripts.07_blend_models
+```
+
+📈 Blend — Test Metrics
+
+F1:       0.9369
+ROC-AUC:  0.9815
+Accuracy: 0.9357
+
+This blended model substantially outperforms both individual models.
+
+---
+
+🕵️ Error Analysis Summary
+
+We compared predictions across TF-IDF, DistilBERT, and the blend:
+	•	DistilBERT improves especially on long, descriptive, context-dependent reviews, where sentiment is expressed implicitly and requires understanding the overall tone and argument structure.
+	•	TF-IDF remains strong on short and emotionally explicit reviews, where single keywords (e.g., “awful”, “excellent”) carry most of the signal.
+	•	Both models struggle with sarcasm/irony, mixed-sentiment reviews, and potential label noise.
+
+As a result, blending benefits from complementary strengths and achieves the best overall quality.
+
+---
 
 ## 🎯 Next Steps
 
-- **Model blending**: combine TF-IDF and DistilBERT predictions  
-- **Error analysis**: inspect misclassified examples for both models  
 - **Further transformer tuning** (epochs, lr, max_length, scheduler)
+- **Conditional blending
 
 ------
 
