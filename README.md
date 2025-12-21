@@ -116,7 +116,7 @@ As a result, blending benefits from complementary strengths and achieves the bes
 ## 🎯 Next Steps
 
 - **Further transformer tuning** (epochs, lr, max_length, scheduler)
-- **Conditional blending
+- Conditional blending
 
 ------
 
