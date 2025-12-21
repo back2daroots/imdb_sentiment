@@ -113,10 +113,36 @@ As a result, blending benefits from complementary strengths and achieves the bes
 
 ---
 
+## 🧠 Conditional Blending (by review length)
+
+We applied a simple rule-based blend depending on review length (word count):
+
+- If `len_words(text) <= N`: use `alpha_short`
+- Else: use `alpha_long`
+
+Parameters were selected by maximizing **OOF F1**.
+
+Best OOF parameters:
+- N = 200 words
+- alpha_short = 0.50
+- alpha_long = 0.20
+
+📈 Conditional Blend — Test Metrics
+
+- F1:       0.9390
+- ROC-AUC:  0.9819
+- Accuracy: 0.9380
+
+Run:
+```bash
+python -m scripts.09_conditional_blend
+```
+
+---
+
 ## 🎯 Next Steps
 
 - **Further transformer tuning** (epochs, lr, max_length, scheduler)
-- Conditional blending
 
 ------
 
